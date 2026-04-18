@@ -1,6 +1,6 @@
 # X / Twitter Comment Scraper
 
-> A zero-dependency Chrome extension that passively collects every reply on any X (Twitter) post as you scroll — no API key, no cookies, no rate limits.
+> A vibe coded zero-dependency Chrome extension that passively collects every reply on any X (Twitter) post as you scroll. No API key, no cookies, no rate limits. For Free.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-green.svg)](manifest.json)
@@ -14,7 +14,7 @@
 
 ## How it works
 
-X virtualises its feed — as you scroll down, old reply nodes are removed from the DOM and new ones are injected. A **`MutationObserver`** watches `document.body` and captures every `<article data-testid="tweet">` the moment it appears. Each capture is deduplicated by tweet ID before being written to an in-memory store, so the same reply is never counted twice no matter how many times you scroll past it.
+X virtualises its feed: as you scroll down, old reply nodes are removed from the DOM and new ones are injected. A **`MutationObserver`** watches `document.body` and captures every `<article data-testid="tweet">` the moment it appears. Each capture is deduplicated by tweet ID before being written to an in-memory store, so the same reply is never counted twice no matter how many times you scroll past it.
 
 ```
 User scrolls ──▶ X injects article nodes ──▶ MutationObserver fires
@@ -32,7 +32,7 @@ User scrolls ──▶ X injects article nodes ──▶ MutationObserver fires
 
 | | |
 |---|---|
-| 🔍 **Passive capture** | Works as you scroll — no auto-scroll bot |
+| 🔍 **Passive capture** | Works as you scroll. No auto-scroll bot |
 | 🧹 **Deduplication** | Each comment stored exactly once (keyed by tweet ID) |
 | ⏸ **Pause / Resume** | Stop the observer at any time; data is preserved |
 | 🗑 **Reset** | Wipe the in-memory store and start fresh |
@@ -79,7 +79,7 @@ No build step required.
 
 4. Click **"Load unpacked"** and select the `x-comment-scraper-extension/` folder
 
-5. The extension icon appears in your toolbar — pin it for easy access
+5. The extension icon appears in your toolbar.
 
 ---
 
@@ -138,7 +138,7 @@ x-comment-scraper-extension/
 | Browser | Status |
 |---|---|
 | Chrome 109+ | ✅ Fully supported (Manifest V3) |
-| Edge (Chromium) | ✅ Should work — untested |
+| Edge (Chromium) | untested |
 | Firefox | ❌ Uses different extension APIs |
 | Safari | ❌ Not supported |
 
@@ -158,4 +158,4 @@ This tool is intended for personal research and data analysis on **public** post
 
 ## License
 
-[MIT](LICENSE) © 2026 x-comment-scraper contributors
+[MIT](LICENSE) © 2026
