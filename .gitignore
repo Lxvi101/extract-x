@@ -13,6 +13,10 @@ Desktop.ini
 *.crx
 *.pem
 
+# Keep generated assets in version control
+!icons/
+!assets/
+
 # Editor directories
 .vscode/
 .idea/

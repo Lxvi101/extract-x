@@ -6,6 +6,10 @@
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-green.svg)](manifest.json)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
+<p align="center">
+  <img src="assets/demo.gif" alt="Demo — counter ticking up as you scroll through replies" width="320" />
+</p>
+
 ---
 
 ## How it works
@@ -97,11 +101,21 @@ No build step required.
 
 ```
 x-comment-scraper-extension/
-├── manifest.json      # Extension manifest (Manifest V3)
-├── content.js         # MutationObserver scraper — injected into x.com pages
-├── popup.html         # Extension popup UI
-├── popup.js           # Popup logic — polls content script, handles exports
-├── LICENSE            # MIT
+├── manifest.json          # Extension manifest (Manifest V3)
+├── content.js             # MutationObserver scraper — injected into x.com pages
+├── popup.html             # Extension popup UI
+├── popup.js               # Popup logic — polls content script, handles exports
+├── icons/
+│   ├── icon16.png
+│   ├── icon32.png
+│   ├── icon48.png
+│   └── icon128.png
+├── assets/
+│   └── demo.gif           # Animated demo (README)
+├── scripts/
+│   └── generate_assets.py # Regenerate icons + demo GIF
+├── CONTRIBUTING.md
+├── LICENSE                # MIT
 └── README.md
 ```
 
