@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "X/Twitter Comment Scraper",
+  "version": "1.0.0",
+  "description": "Auto-scroll and scrape all comments/replies from any X/Twitter post. Export to JSON or CSV.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://x.com/*",
+    "https://twitter.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "X Comment Scraper"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://x.com/*", "https://twitter.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

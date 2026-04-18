@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>X Comment Scraper</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 320px;
+      background: #0f1419;
+      color: #e7e9ea;
+      font-size: 13px;
+      user-select: none;
+    }
+
+    /* ── Header ───────────────────────────────────────────── */
+    header {
+      background: #1d9bf0;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    header h1 { font-size: 15px; font-weight: 700; color: #fff; flex: 1; }
+    .header-badge {
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    /* ── Body ─────────────────────────────────────────────── */
+    .body { padding: 14px; }
+
+    /* ── Warning ──────────────────────────────────────────── */
+    .warning {
+      font-size: 12px;
+      color: #ffd400;
+      background: rgba(255, 212, 0, 0.07);
+      border: 1px solid rgba(255, 212, 0, 0.28);
+      border-radius: 8px;
+      padding: 9px 11px;
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+
+    /* ── Counter card ─────────────────────────────────────── */
+    .card {
+      background: #16202a;
+      border: 1px solid #2f3336;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle animated gradient when watching */
+    .card.watching::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg,
+        transparent 0%, rgba(29,155,240,0.06) 50%, transparent 100%);
+      background-size: 200% 100%;
+      animation: shimmer 2s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .status-dot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #3e4144;
+      flex-shrink: 0;
+    }
+    .dot.idle    { background: #3e4144; }
+    .dot.watching {
+      background: #1d9bf0;
+      box-shadow: 0 0 0 0 rgba(29,155,240,0.5);
+      animation: pulse 1.4s ease-out infinite;
+    }
+    .dot.paused  { background: #ffd400; }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0   rgba(29,155,240,0.55); }
+      70%  { box-shadow: 0 0 0 7px rgba(29,155,240,0);    }
+      100% { box-shadow: 0 0 0 0   rgba(29,155,240,0);    }
+    }
+
+    .status-label.idle     { color: #71767b; }
+    .status-label.watching { color: #1d9bf0; }
+    .status-label.paused   { color: #ffd400; }
+
+    .new-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(0,186,124,0.15);
+      color: #00ba7c;
+      padding: 2px 8px;
+      border-radius: 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .new-badge.visible { opacity: 1; }
+
+    .count-big {
+      font-size: 44px;
+      font-weight: 800;
+      text-align: center;
+      color: #e7e9ea;
+      letter-spacing: -2px;
+      line-height: 1;
+      padding: 4px 0;
+      transition: color 0.3s;
+    }
+    .count-big.bump {
+      animation: bump 0.25s ease-out;
+    }
+    @keyframes bump {
+      0%   { transform: scale(1);    color: #1d9bf0; }
+      50%  { transform: scale(1.08); color: #1d9bf0; }
+      100% { transform: scale(1);    color: #e7e9ea; }
+    }
+
+    .count-sub {
+      text-align: center;
+      color: #71767b;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    /* ── Buttons ──────────────────────────────────────────── */
+    .btn-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .btn {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    .btn:hover:not(:disabled)  { filter: brightness(1.12); }
+    .btn:active:not(:disabled) { filter: brightness(0.88); }
+    .btn:disabled { opacity: 0.36; cursor: not-allowed; }
+
+    .btn-blue  { background: #1d9bf0; color: #fff; }
+    .btn-red   { background: #f4212e; color: #fff; }
+    .btn-ghost { background: #2f3336; color: #e7e9ea; }
+    .btn-green { background: #00ba7c; color: #fff; }
+
+    /* ── Export row ───────────────────────────────────────── */
+    .export-row { display: flex; gap: 8px; }
+    .export-row .btn { font-size: 12px; }
+
+    /* ── Footer ───────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      color: #2f3336;
+      font-size: 11px;
+      padding: 4px 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="white" aria-hidden="true">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+  </svg>
+  <h1>Comment Scraper</h1>
+  <span class="header-badge">v1.1</span>
+</header>
+
+<div class="body">
+
+  <div id="not-on-tweet" class="warning" style="display:none">
+    ⚠️ Navigate to a tweet/post page on X first, then open the extension.
+  </div>
+
+  <!-- Counter card -->
+  <div class="card" id="card">
+    <div class="card-top">
+      <div class="status-dot">
+        <div class="dot idle" id="dot"></div>
+        <span class="status-label idle" id="status-label">Idle</span>
+      </div>
+      <span class="new-badge" id="new-badge">+new</span>
+    </div>
+    <div class="count-big" id="count-display">0</div>
+    <div class="count-sub">comments in database</div>
+  </div>
+
+  <!-- Primary actions -->
+  <div class="btn-row">
+    <button class="btn btn-blue"  id="btn-start">👁 Start Watching</button>
+    <button class="btn btn-red"   id="btn-stop"  disabled>⏸ Pause</button>
+  </div>
+
+  <!-- Secondary actions -->
+  <div class="btn-row" style="margin-bottom:12px">
+    <button class="btn btn-ghost" id="btn-reset" disabled>🗑 Reset</button>
+  </div>
+
+  <!-- Export -->
+  <div class="export-row">
+    <button class="btn btn-green" id="btn-json" disabled>⬇ Export JSON</button>
+    <button class="btn btn-ghost" id="btn-csv"  disabled>⬇ Export CSV</button>
+  </div>
+
+</div>
+
+<footer>Scroll down on the tweet page — comments are captured automatically.</footer>
+
+<script src="popup.js"></script>
+</body>
+</html>
